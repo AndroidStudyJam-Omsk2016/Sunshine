@@ -1,8 +1,8 @@
 package loc.developer.vladimiry.sunshine;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 
 /**
@@ -23,7 +22,7 @@ import android.widget.Toast;
 public class FetchWeatherFragment extends Fragment{
 
     private final String LOG_TAG = FetchWeatherFragment.class.getSimpleName();
-    private View mMainView;
+    private View mRootView;
     private ListView listView;
     private ArrayAdapter<String> mForecastAdapter;
     private FetchWeatherTask mTask;
@@ -66,22 +65,27 @@ public class FetchWeatherFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        mMainView = inflater.inflate(R.layout.fragment_main, container, false);
-        listView = (ListView) mMainView.findViewById(R.id.listview_forecast);
+        mRootView = inflater.inflate(R.layout.fragment_main, container, false);
+        listView = (ListView) mRootView.findViewById(R.id.listview_forecast);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String forecast = mForecastAdapter.getItem(position);
-                Snackbar.make(view, forecast, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                //Snackbar.make(view, forecast, Snackbar.LENGTH_LONG)
+                //        .setAction("Action", null).show();
                 // or
                 //Toast.makeText(getActivity(), forecast, Toast.LENGTH_LONG).show();
+
+                Intent intent = new Intent(getActivity(), DetailActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT, forecast);
+                startActivity(intent);
+
             }
         });
 
         updateView(weekForecast);
 
-        return mMainView;
+        return mRootView;
     }
 
     public void updateView(String[] data) {
