@@ -17,6 +17,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import loc.developer.vladimiry.sunshine.core.OpenWeatherMapParam;
+
 
 /**
  * A placeholder fragment containing a simple view.
@@ -58,8 +60,15 @@ public class FetchWeatherFragment extends Fragment{
         if(id == R.id.action_refresh) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
             String location = prefs.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
+            String mode = "json";
+            String units = prefs.getString(getString(R.string.pref_units_key), getString(R.string.pref_units_default));
+            int cnt = 16;
+            String appid = "6d39fd36fb138d6aca011cd3954a4c97";
+
+            OpenWeatherMapParam param = new OpenWeatherMapParam(location, mode, units, cnt, appid);
+
             mTask = new FetchWeatherTask(this);
-            mTask.execute(location);
+            mTask.execute(param);
             return true;
         }
         return super.onOptionsItemSelected(item);

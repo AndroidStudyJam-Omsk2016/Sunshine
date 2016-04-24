@@ -8,7 +8,7 @@ import android.os.Parcelable;
  */
 public class OpenWeatherMapParam implements Parcelable {
 
-    private String q;
+    private String location;
     private String mode;
     private String units;
     private int cnt;
@@ -22,9 +22,9 @@ public class OpenWeatherMapParam implements Parcelable {
      * @param cnt
      * @param appid
      */
-    public OpenWeatherMapParam(String q, String mode, String units, int cnt, String appid)
+    public OpenWeatherMapParam(String location, String mode, String units, int cnt, String appid)
     {
-        this.q = q;
+        this.location = location;
         this.mode = mode;
         this.units = units;
         this.cnt = cnt;
@@ -44,7 +44,7 @@ public class OpenWeatherMapParam implements Parcelable {
     }
 
     private void readFromParcel(Parcel in) {
-        q = in.readString();
+        location = in.readString();
         mode = in.readString();
         units = in.readString();
         cnt = in.readInt();
@@ -59,7 +59,7 @@ public class OpenWeatherMapParam implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.q);
+        dest.writeString(this.location);
         dest.writeString(this.mode);
         dest.writeString(this.units);
         dest.writeInt(this.cnt);
@@ -69,12 +69,12 @@ public class OpenWeatherMapParam implements Parcelable {
 
     //region Getter and Setter
 
-    public String getQ() {
-        return q;
+    public String getLocation() {
+        return location;
     }
 
-    public void setQ(String q) {
-        this.q = q;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public String getMode() {

@@ -17,10 +17,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 
+import loc.developer.vladimiry.sunshine.core.OpenWeatherMapParam;
+
 /**
  * Created by User on 22.04.2016.
  */
-public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
+public class FetchWeatherTask extends AsyncTask<OpenWeatherMapParam, Void, String[]> {
 
     FetchWeatherFragment container;
     String[] data;
@@ -32,16 +34,11 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
     }
 
     @Override
-    protected String[] doInBackground(String... params) {
+    protected String[] doInBackground(OpenWeatherMapParam... params) {
 
         if (params.length == 0) {
             return null;
         }
-
-        String mode = "json";
-        String units = "metric";
-        int cnt = 7;
-        String appid = "6d39fd36fb138d6aca011cd3954a4c97";
 
         final String FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?";
         final String QUERY_PARAM = "q";
@@ -61,11 +58,11 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
         try {
 
             Uri uri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                    .appendQueryParameter(QUERY_PARAM, params[0])
-                    .appendQueryParameter(MODE_PARAM, mode)
-                    .appendQueryParameter(UNITS_PARAM, units)
-                    .appendQueryParameter(CNT_PARAM, Integer.toString(cnt))
-                    .appendQueryParameter(APPID_PARAM, appid)
+                    .appendQueryParameter(QUERY_PARAM, params[0].getLocation())
+                    .appendQueryParameter(MODE_PARAM, params[0].getMode())
+                    .appendQueryParameter(UNITS_PARAM, params[0].getUnits())
+                    .appendQueryParameter(CNT_PARAM, Integer.toString(params[0].getCnt()))
+                    .appendQueryParameter(APPID_PARAM, params[0].getAppid())
                     .build();
 
             URL url = new URL(uri.toString());
@@ -120,7 +117,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
         try
         {
-            return getWeatherDataFromJson(forecastJsonStr, cnt);
+            return getWeatherDataFromJson(forecastJsonStr, params[0].getCnt());
         }
         catch (JSONException e)
         {
