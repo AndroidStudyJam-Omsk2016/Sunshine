@@ -14,10 +14,14 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import loc.developer.vladimiry.sunshine.core.Util;
+
 
 public class MainActivity extends AppCompatActivity {
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
+    private boolean mTwoPane;
+    private String mLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,4 +93,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 }

@@ -45,6 +45,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="loc.developer.vladimiry.sunshine.MainActivity" />
         </activity>
+
+        <provider
+            android:name=".data.WeatherProvider"
+            android:authorities="loc.developer.vladimiry.sunshine"
+            android:enabled="true"
+            android:exported="true"></provider>
     </application>
 
 </manifest>
