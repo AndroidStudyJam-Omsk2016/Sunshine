@@ -22,6 +22,18 @@ public class Util {
                 context.getString(R.string.pref_location_default));
     }
 
+    public static String getPreferredUnits(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(context.getString(R.string.pref_units_key),
+                context.getString(R.string.pref_units_default));
+    }
+
+    public static int getPreferredDayCount(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return Integer.parseInt(prefs.getString(context.getString(R.string.pref_day_count_key),
+                context.getString(R.string.pref_day_count_default)), 10);
+    }
+
     public static boolean isMetric(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getString(context.getString(R.string.pref_units_key),
@@ -41,7 +53,7 @@ public class Util {
         return String.format(context.getString(R.string.format_temperature), temperature);
     }
 
-    static String formatDate(long dateInMilliseconds) {
+    public static String formatDate(long dateInMilliseconds) {
         Date date = new Date(dateInMilliseconds);
         return DateFormat.getDateInstance().format(date);
     }

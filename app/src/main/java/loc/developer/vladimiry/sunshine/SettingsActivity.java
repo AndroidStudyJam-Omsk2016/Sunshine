@@ -187,6 +187,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             setHasOptionsMenu(true);
 
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_location_key)));
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_day_count_key)));
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_units_key)));
         }
 

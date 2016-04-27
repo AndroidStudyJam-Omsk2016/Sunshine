@@ -20,6 +20,11 @@
     <string name="pref_location_default" translatable="false">Omsk</string>
     <string name="pref_location_description">Location description</string>
 
+    <string name="pref_day_count_title">Day count</string>
+    <string name="pref_day_count_key" translatable="false">cnt</string>
+    <string name="pref_day_count_default" translatable="false">7</string>
+    <string name="pref_day_count_description">Day count description</string>
+
     <!-- Preference - Weather Notifications -->
     <string name="pref_enable_notifications_key" translatable="false">enable_notifications</string>
     <string name="pref_enable_notifications_label">Weather Notifications</string>

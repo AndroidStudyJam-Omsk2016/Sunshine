@@ -1,10 +1,16 @@
 package loc.developer.vladimiry.sunshine;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,10 +20,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import loc.developer.vladimiry.sunshine.core.Util;
+import loc.developer.vladimiry.sunshine.data.WeatherContract;
+
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailActivityFragment extends Fragment {
+public class DetailActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = DetailActivityFragment.class.getSimpleName();
     private static final String FORECAST_SHARE_HASHTAG = "#SunshineApp";
@@ -25,6 +34,21 @@ public class DetailActivityFragment extends Fragment {
     private ShareActionProvider mShareActionProvider;
     private String mForecastString;
     private View mRootView;
+    private static final int DETAIL_LOADER = 0;
+
+    private static final String[] FORECAST_COLUMNS = {
+        WeatherContract.WeatherEntry.TABLE_NAME + "." + WeatherContract.WeatherEntry._ID,
+        WeatherContract.WeatherEntry.COLUMN_DATE,
+        WeatherContract.WeatherEntry.COLUMN_SHORT_DESC,
+        WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
+        WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
+    };
+
+    private static final int COL_WEATHER_ID = 0;
+    private static final int COL_WEATHER_DATE = 1;
+    private static final int COL_WEATHER_DESC = 2;
+    private static final int COL_WEATHER_MAX_TEMP = 3;
+    private static final int COL_WEATHER_MIN_TEMP = 4;
 
     public DetailActivityFragment() {
         setHasOptionsMenu(true);
@@ -35,17 +59,7 @@ public class DetailActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         mRootView = inflater.inflate(R.layout.fragment_detail, container, false);
-
-        Intent intent = getActivity().getIntent();
-        if (null != intent && intent.hasExtra(Intent.EXTRA_TEXT)) {
-            mForecastString = intent.getStringExtra(Intent.EXTRA_TEXT);
-            updateView(mForecastString);
-        }
         return mRootView;
-    }
-
-    private void updateView(String forecast) {
-        ((TextView)mRootView.findViewById(R.id.detail_text)).setText(forecast);
     }
 
     @Override
@@ -73,5 +87,47 @@ public class DetailActivityFragment extends Fragment {
         return shareIntent;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        getLoaderManager().initLoader(DETAIL_LOADER, null, this);
+        super.onActivityCreated(savedInstanceState);
+    }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.v(LOG_TAG, "In onCreateLoader");
+        Intent intent = getActivity().getIntent();
+        if (intent == null) {
+            return null;
+        }
+
+        // Now create and return a CursorLoader that will take care of
+        // creating a Cursor for the data being displayed.
+        return new CursorLoader( getActivity(), intent.getData(), FORECAST_COLUMNS,
+                null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.v(LOG_TAG, "In onLoadFinished");
+        if (!data.moveToFirst()) { return; }
+
+        String dateString = Util.formatDate(data.getLong(COL_WEATHER_DATE));
+        String weatherDescription = data.getString(COL_WEATHER_DESC);
+        String high = Util.formatTemperature(getActivity(), data.getDouble(COL_WEATHER_MAX_TEMP));
+        String low = Util.formatTemperature(getActivity(), data.getDouble(COL_WEATHER_MIN_TEMP));
+
+        String text = String.format("%s - %s - %s/%s", dateString, weatherDescription, high, low);
+        TextView detailTextView = (TextView)getView().findViewById(R.id.detail_text);
+        detailTextView.setText(text);
+
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(createShareForecastIntent());
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
 }

@@ -9,6 +9,15 @@
         android:singleLine="true"
         android:title="@string/pref_location_title" />
 
+    <EditTextPreference
+        android:defaultValue="@string/pref_day_count_default"
+        android:inputType="number"
+        android:key="@string/pref_day_count_key"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_day_count_title" />
+
     <ListPreference
         android:defaultValue="@string/pref_units_default"
         android:entries="@array/pref_units_titles"

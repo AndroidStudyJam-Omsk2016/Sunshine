@@ -1,10 +1,8 @@
 package loc.developer.vladimiry.sunshine;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,11 +18,13 @@ import loc.developer.vladimiry.sunshine.core.Util;
 public class MainActivity extends AppCompatActivity {
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
+    private final String FETCH_WEATHER_FRAGMENT_TAG = "FWFTAG";
     private boolean mTwoPane;
     private String mLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mLocation = Util.getPreferredLocation(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -70,11 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void openPrefferedLocationInMap()
     {
-        SharedPreferences prefs =
-                PreferenceManager.getDefaultSharedPreferences(this);
-        String location = prefs.getString(
-                getString(R.string.pref_location_key),
-                getString(R.string.pref_location_default));
+        String location = Util.getPreferredLocation(this);
 
         Uri geolocation = Uri.parse("geo:0,0?").buildUpon()
                 .appendQueryParameter("q", location)
@@ -96,5 +92,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        String location = Util.getPreferredLocation( this );
+        if (location != null && !location.equals(mLocation)) {
+            FetchWeatherFragment fwf = (FetchWeatherFragment)getSupportFragmentManager().findFragmentByTag(FETCH_WEATHER_FRAGMENT_TAG);
+            if ( null != fwf ) {
+                fwf.onLocationChanged();
+            }
+            mLocation = location;
+        }
     }
 }
