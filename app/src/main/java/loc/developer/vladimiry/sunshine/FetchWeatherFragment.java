@@ -2,10 +2,8 @@ package loc.developer.vladimiry.sunshine;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -56,7 +54,7 @@ public class FetchWeatherFragment extends Fragment implements LoaderManager.Load
     static final int COL_COORD_LAT = 7;
     static final int COL_COORD_LONG = 8;
 
-    private ForecastAdapter mForecastAdapter;
+    private FetchWeatherAdapter mFetchWeatherAdapter;
     private FetchWeatherTask mTask;
 
     public FetchWeatherFragment() {
@@ -87,10 +85,10 @@ public class FetchWeatherFragment extends Fragment implements LoaderManager.Load
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        mForecastAdapter = new ForecastAdapter(getActivity(), null, 0);
+        mFetchWeatherAdapter = new FetchWeatherAdapter(getActivity(), null, 0);
         mRootView = inflater.inflate(R.layout.fragment_main, container, false);
         listView = (ListView) mRootView.findViewById(R.id.listview_forecast);
-        listView.setAdapter(mForecastAdapter);
+        listView.setAdapter(mFetchWeatherAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -152,11 +150,11 @@ public class FetchWeatherFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mForecastAdapter.swapCursor(data);
+        mFetchWeatherAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mForecastAdapter.swapCursor(null);
+        mFetchWeatherAdapter.swapCursor(null);
     }
 }
