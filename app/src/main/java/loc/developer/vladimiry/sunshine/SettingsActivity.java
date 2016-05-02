@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -86,6 +87,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             return true;
         }
     };
+
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @Nullable
+    @Override
+    public Intent getParentActivityIntent() {
+        return super.getParentActivityIntent().addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    }
 
     /**
      * Helper method to determine if the device has an extra-large screen. For

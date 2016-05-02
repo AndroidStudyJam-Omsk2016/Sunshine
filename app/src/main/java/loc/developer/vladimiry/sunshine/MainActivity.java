@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -15,18 +16,38 @@ import android.view.MenuItem;
 import loc.developer.vladimiry.sunshine.core.Util;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FetchWeatherFragment.Callback{
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
     private final String FETCH_WEATHER_FRAGMENT_TAG = "FWFTAG";
+    private final String FETCH_WEATHER_DETAIL_FRAGMENT_TAG = "FWDFTAG";
     private boolean mTwoPane;
     private String mLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mLocation = Util.getPreferredLocation(this);
         super.onCreate(savedInstanceState);
+        mLocation = Util.getPreferredLocation(this);
         setContentView(R.layout.activity_main);
+
+        if (findViewById(R.id.weather_detail_container) != null) {
+            mTwoPane = true;
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.weather_detail_container, new DetailActivityFragment(), FETCH_WEATHER_DETAIL_FRAGMENT_TAG)
+                        .commit();
+            }
+        } else {
+            mTwoPane = false;
+            //getSupportActionBar().setElevation(0f);
+        }
+
+
+        FetchWeatherFragment fwf = ((FetchWeatherFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.content_main_fragment));
+        fwf.setUseTodayLayout(!mTwoPane);
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -39,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         fab.setVisibility(View.INVISIBLE);
+
+
+
     }
 
     @Override
@@ -98,7 +122,32 @@ public class MainActivity extends AppCompatActivity {
             if ( null != fwf ) {
                 fwf.onLocationChanged();
             }
+
+            DetailActivityFragment daf = (DetailActivityFragment)getSupportFragmentManager().findFragmentByTag(FETCH_WEATHER_DETAIL_FRAGMENT_TAG);
+            if ( null != daf ) {
+                daf.onLocationChanged(location);
+            }
+
             mLocation = location;
+        }
+    }
+
+    @Override
+    public void onItemSelected(Uri dateUri) {
+        if (mTwoPane) {
+            Bundle args = new Bundle();
+            args.putParcelable(DetailActivityFragment.DETAIL_URI, dateUri);
+            DetailActivityFragment fragment = new DetailActivityFragment();
+            fragment.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.weather_detail_container, fragment, FETCH_WEATHER_DETAIL_FRAGMENT_TAG)
+                    .commit();
+        }
+        else {
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .setData(dateUri);
+            startActivity(intent);
         }
     }
 }

@@ -1,7 +1,6 @@
 package loc.developer.vladimiry.sunshine;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.Nullable;
@@ -31,7 +30,11 @@ public class FetchWeatherFragment extends Fragment implements LoaderManager.Load
 
     private final String LOG_TAG = FetchWeatherFragment.class.getSimpleName();
     private View mRootView;
-    private ListView listView;
+    private ListView mListView;
+    private int mPosition = ListView.INVALID_POSITION;
+    private boolean mUseTodayLayout;
+
+    private static final String SELECTED_KEY = "selected_position";
     private static final int FETCH_WEATHER_LOADER = 0;
     private static final String[] FETCH_WEATHER_COLUMNS = {
             WeatherContract.WeatherEntry.TABLE_NAME + "." + WeatherContract.WeatherEntry._ID,
@@ -55,7 +58,11 @@ public class FetchWeatherFragment extends Fragment implements LoaderManager.Load
     static final int COL_COORD_LONG = 8;
 
     private FetchWeatherAdapter mFetchWeatherAdapter;
-    private FetchWeatherTask mTask;
+
+
+    public interface Callback {
+        void onItemSelected(Uri dateUri);
+    }
 
     public FetchWeatherFragment() {
     }
@@ -86,24 +93,34 @@ public class FetchWeatherFragment extends Fragment implements LoaderManager.Load
                              Bundle savedInstanceState) {
 
         mFetchWeatherAdapter = new FetchWeatherAdapter(getActivity(), null, 0);
-        mRootView = inflater.inflate(R.layout.fragment_main, container, false);
-        listView = (ListView) mRootView.findViewById(R.id.listview_forecast);
-        listView.setAdapter(mFetchWeatherAdapter);
+        mFetchWeatherAdapter.setUseTodayLayout(mUseTodayLayout);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mRootView = inflater.inflate(R.layout.fragment_main, container, false);
+        mListView = (ListView) mRootView.findViewById(R.id.listview_forecast);
+        mListView.setAdapter(mFetchWeatherAdapter);
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 if (cursor != null) {
                     String locationSetting = Util.getPreferredLocation(getActivity());
-                    Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
+                    ((Callback) getActivity())
+                            .onItemSelected(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
                                     locationSetting, cursor.getLong(COL_WEATHER_DATE)
                             ));
-                    startActivity(intent);
                 }
+                mPosition = position;
             }
         });
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
+            mPosition = savedInstanceState.getInt(SELECTED_KEY);
+        }
+
+        if (mFetchWeatherAdapter != null) {
+            mFetchWeatherAdapter.setUseTodayLayout(mUseTodayLayout);
+        }
 
         return mRootView;
     }
@@ -151,10 +168,28 @@ public class FetchWeatherFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mFetchWeatherAdapter.swapCursor(data);
+        if (mPosition != ListView.INVALID_POSITION) {
+            mListView.smoothScrollToPosition(mPosition);
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mFetchWeatherAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (mPosition != ListView.INVALID_POSITION) {
+            outState.putInt(SELECTED_KEY, mPosition);
+        }
+        super.onSaveInstanceState(outState);
+    }
+
+    public void setUseTodayLayout(boolean useTodayLayout) {
+        mUseTodayLayout = useTodayLayout;
+        if (mFetchWeatherAdapter != null) {
+            mFetchWeatherAdapter.setUseTodayLayout(mUseTodayLayout);
+        }
     }
 }
