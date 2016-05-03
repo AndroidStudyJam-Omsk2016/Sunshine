@@ -1,10 +1,7 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/content_detail_fragment"
-    android:name="loc.developer.vladimiry.sunshine.DetailActivityFragment"
+    android:id="@+id/weather_detail_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:tag="FWDFTAG"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:layout="@layout/fragment_detail" />
+    tools:context="loc.developer.vladimiry.sunshine.DetailActivity"
+    tools:ignore="MergeRootFrame" />

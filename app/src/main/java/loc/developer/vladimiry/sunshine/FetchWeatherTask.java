@@ -26,6 +26,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Vector;
+import java.util.concurrent.Exchanger;
 
 import loc.developer.vladimiry.sunshine.core.OpenWeatherMapParam;
 import loc.developer.vladimiry.sunshine.data.WeatherContract;
@@ -51,6 +52,7 @@ public class FetchWeatherTask extends AsyncTask<OpenWeatherMapParam, Void, Void>
             return null;
         }
 
+
         final String FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?";
         final String QUERY_PARAM = "q";
         final String MODE_PARAM = "mode";
@@ -65,6 +67,20 @@ public class FetchWeatherTask extends AsyncTask<OpenWeatherMapParam, Void, Void>
 
         // Will contain the raw JSON response as a string.
         String forecastJsonStr = null;
+
+//        // dummy
+//        forecastJsonStr = "{\"city\":{\"id\":1496153,\"name\":\"Kirov\",\"coord\":{\"lon\":73.400002,\"lat\":55},\"country\":\"RU\",\"population\":0},\"cod\":\"200\",\"message\":0.0085,\"cnt\":7,\"list\":[{\"dt\":1461308400,\"temp\":{\"day\":14.57,\"min\":11.51,\"max\":14.57,\"night\":11.51,\"eve\":14.57,\"morn\":14.57},\"pressure\":1012.18,\"humidity\":81,\"weather\":[{\"id\":501,\"main\":\"Rain\",\"description\":\"moderate rain\",\"icon\":\"10d\"}],\"speed\":1.87,\"deg\":327,\"clouds\":8,\"rain\":4.56},{\"dt\":1461394800,\"temp\":{\"day\":19,\"min\":9.86,\"max\":19.79,\"night\":14.75,\"eve\":19.79,\"morn\":9.86},\"pressure\":1012.7,\"humidity\":89,\"weather\":[{\"id\":500,\"main\":\"Rain\",\"description\":\"light rain\",\"icon\":\"10d\"}],\"speed\":2.01,\"deg\":258,\"clouds\":8,\"rain\":0.22},{\"dt\":1461481200,\"temp\":{\"day\":12.35,\"min\":9.23,\"max\":14.6,\"night\":9.39,\"eve\":14.38,\"morn\":9.23},\"pressure\":1016.74,\"humidity\":79,\"weather\":[{\"id\":501,\"main\":\"Rain\",\"description\":\"moderate rain\",\"icon\":\"10d\"}],\"speed\":6.11,\"deg\":287,\"clouds\":0,\"rain\":3.53},{\"dt\":1461567600,\"temp\":{\"day\":11.09,\"min\":5.5,\"max\":11.22,\"night\":7.9,\"eve\":11.2,\"morn\":5.5},\"pressure\":1022.22,\"humidity\":62,\"weather\":[{\"id\":800,\"main\":\"Clear\",\"description\":\"clear sky\",\"icon\":\"02d\"}],\"speed\":7.97,\"deg\":276,\"clouds\":8},{\"dt\":1461654000,\"temp\":{\"day\":9.47,\"min\":4.22,\"max\":10.65,\"night\":4.35,\"eve\":10.26,\"morn\":4.22},\"pressure\":1016.92,\"humidity\":66,\"weather\":[{\"id\":500,\"main\":\"Rain\",\"description\":\"light rain\",\"icon\":\"10d\"}],\"speed\":5.82,\"deg\":293,\"clouds\":68,\"rain\":0.4},{\"dt\":1461740400,\"temp\":{\"day\":9.73,\"min\":4.03,\"max\":9.73,\"night\":5.42,\"eve\":9.55,\"morn\":4.03},\"pressure\":1027.65,\"humidity\":0,\"weather\":[{\"id\":500,\"main\":\"Rain\",\"description\":\"light rain\",\"icon\":\"10d\"}],\"speed\":5.44,\"deg\":31,\"clouds\":0,\"rain\":1.45},{\"dt\":1461826800,\"temp\":{\"day\":9.94,\"min\":5.23,\"max\":10.36,\"night\":6.21,\"eve\":10.36,\"morn\":5.23},\"pressure\":1024.39,\"humidity\":0,\"weather\":[{\"id\":500,\"main\":\"Rain\",\"description\":\"light rain\",\"icon\":\"10d\"}],\"speed\":4.65,\"deg\":15,\"clouds\":76,\"rain\":1.53}]}";
+//        Log.i("dummy sunshine", forecastJsonStr);
+//
+//        try {
+//            getWeatherDataFromJson(forecastJsonStr, params[0].getLocation());
+//        }
+//        catch (Exception e) {
+//            Log.d("dummy sunshine ex", e.getMessage().toString());
+//        }
+//
+//
+//        return null;
 
         try {
 
@@ -108,11 +124,15 @@ public class FetchWeatherTask extends AsyncTask<OpenWeatherMapParam, Void, Void>
             }
             forecastJsonStr = buffer.toString();
             Log.i("sunshine", forecastJsonStr);
+            getWeatherDataFromJson(forecastJsonStr, params[0].getLocation());
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
             // If the code didn't successfully get the weather data, there's no point in attemping
             // to parse it.
             return null;
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -126,6 +146,7 @@ public class FetchWeatherTask extends AsyncTask<OpenWeatherMapParam, Void, Void>
             }
         }
         return null;
+
     }
 
     long addLocation(String locationSetting, String cityName, double lat, double lon) {

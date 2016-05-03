@@ -30,19 +30,6 @@ public class MainActivity extends AppCompatActivity implements FetchWeatherFragm
         mLocation = Util.getPreferredLocation(this);
         setContentView(R.layout.activity_main);
 
-        if (findViewById(R.id.weather_detail_container) != null) {
-            mTwoPane = true;
-            if (savedInstanceState == null) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.weather_detail_container, new DetailActivityFragment(), FETCH_WEATHER_DETAIL_FRAGMENT_TAG)
-                        .commit();
-            }
-        } else {
-            mTwoPane = false;
-            //getSupportActionBar().setElevation(0f);
-        }
-
-
         FetchWeatherFragment fwf = ((FetchWeatherFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.content_main_fragment));
         fwf.setUseTodayLayout(!mTwoPane);
@@ -61,6 +48,17 @@ public class MainActivity extends AppCompatActivity implements FetchWeatherFragm
         });
         fab.setVisibility(View.INVISIBLE);
 
+        if (findViewById(R.id.weather_detail_container) != null) {
+            mTwoPane = true;
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.weather_detail_container, new DetailActivityFragment(), FETCH_WEATHER_DETAIL_FRAGMENT_TAG)
+                        .commit();
+            }
+        } else {
+            mTwoPane = false;
+            getSupportActionBar().setElevation(0f);
+        }
 
 
     }
