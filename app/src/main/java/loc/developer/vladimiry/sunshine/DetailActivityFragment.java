@@ -175,6 +175,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
             String description = data.getString(COL_WEATHER_DESC);
             mDescriptionView.setText(description);
+            mIconView.setContentDescription(description);
 
             double high = data.getDouble(COL_WEATHER_MAX_TEMP);
             String highString = Util.formatTemperature(getActivity(), high);
