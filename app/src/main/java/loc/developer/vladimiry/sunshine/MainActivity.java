@@ -34,9 +34,10 @@ public class MainActivity extends AppCompatActivity implements FetchWeatherFragm
                 .findFragmentById(R.id.content_main_fragment));
         fwf.setUseTodayLayout(!mTwoPane);
 
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
