@@ -16,7 +16,9 @@
     <style name="SettingsTheme" parent="AppTheme">
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <style name="AppTheme.AppBarOverlayWithLogo" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="displayOptions">useLogo|showHome</item>
         <item name="logo">@drawable/ic_logo</item>
     </style>

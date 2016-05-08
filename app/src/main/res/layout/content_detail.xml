@@ -3,5 +3,6 @@
     android:id="@+id/weather_detail_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginTop="?attr/actionBarSize"
     tools:context="loc.developer.vladimiry.sunshine.DetailActivity"
     tools:ignore="MergeRootFrame" />

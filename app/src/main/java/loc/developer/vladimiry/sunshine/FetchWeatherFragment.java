@@ -1,6 +1,7 @@
 package loc.developer.vladimiry.sunshine;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.Nullable;
@@ -21,6 +22,7 @@ import android.widget.ListView;
 import loc.developer.vladimiry.sunshine.core.OpenWeatherMapParam;
 import loc.developer.vladimiry.sunshine.core.Util;
 import loc.developer.vladimiry.sunshine.data.WeatherContract;
+import loc.developer.vladimiry.sunshine.service.SunshineService;
 
 
 /**
@@ -131,7 +133,6 @@ public class FetchWeatherFragment extends Fragment implements LoaderManager.Load
     }
 
     private void updateWeather() {
-        FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
         String location = Util.getPreferredLocation(getActivity());
         String mode = "json";
         String units =  Util.getPreferredUnits(getActivity());
@@ -139,7 +140,8 @@ public class FetchWeatherFragment extends Fragment implements LoaderManager.Load
         String appid = BuildConfig.OPEN_WEATHER_MAP_API_KEY;
 
         OpenWeatherMapParam param = new OpenWeatherMapParam(location, mode, units, cnt, appid);
-        weatherTask.execute(param);
+
+        SunshineService.startActionLocation(getContext(), param);
     }
 
     @Override
