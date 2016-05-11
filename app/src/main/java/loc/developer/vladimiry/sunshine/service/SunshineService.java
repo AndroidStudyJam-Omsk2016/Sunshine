@@ -1,6 +1,7 @@
 package loc.developer.vladimiry.sunshine.service;
 
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -307,4 +308,11 @@ public class SunshineService extends IntentService {
         }
     }
 
+    public static class AlarmReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            OpenWeatherMapParam param = intent.getParcelableExtra(SunshineService.EXTRA_PARAM_LOCATION_QUERY);
+            SunshineService.startActionLocation(context, param);
+        }
+    }
 }

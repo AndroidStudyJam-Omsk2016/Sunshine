@@ -1,5 +1,7 @@
 package loc.developer.vladimiry.sunshine;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -133,6 +135,7 @@ public class FetchWeatherFragment extends Fragment implements LoaderManager.Load
     }
 
     private void updateWeather() {
+
         String location = Util.getPreferredLocation(getActivity());
         String mode = "json";
         String units =  Util.getPreferredUnits(getActivity());
@@ -141,7 +144,23 @@ public class FetchWeatherFragment extends Fragment implements LoaderManager.Load
 
         OpenWeatherMapParam param = new OpenWeatherMapParam(location, mode, units, cnt, appid);
 
-        SunshineService.startActionLocation(getContext(), param);
+        Intent alarmIntent = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
+        alarmIntent.putExtra(SunshineService.EXTRA_PARAM_LOCATION_QUERY, param);
+        PendingIntent pi = PendingIntent.getBroadcast(getActivity(), 0,alarmIntent, PendingIntent.FLAG_ONE_SHOT);
+
+        AlarmManager am=(AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pi);
+
+
+//        String location = Util.getPreferredLocation(getActivity());
+//        String mode = "json";
+//        String units =  Util.getPreferredUnits(getActivity());
+//        int cnt = Util.getPreferredDayCount(getActivity());
+//        String appid = BuildConfig.OPEN_WEATHER_MAP_API_KEY;
+//
+//        OpenWeatherMapParam param = new OpenWeatherMapParam(location, mode, units, cnt, appid);
+//
+//        SunshineService.startActionLocation(getContext(), param);
     }
 
     @Override
