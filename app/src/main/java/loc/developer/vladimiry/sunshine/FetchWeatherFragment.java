@@ -21,10 +21,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import loc.developer.vladimiry.sunshine.core.OpenWeatherMapParam;
 import loc.developer.vladimiry.sunshine.core.Util;
 import loc.developer.vladimiry.sunshine.data.WeatherContract;
-import loc.developer.vladimiry.sunshine.service.SunshineService;
+import loc.developer.vladimiry.sunshine.sync.SunshineSyncAdapter;
 
 
 /**
@@ -136,20 +135,7 @@ public class FetchWeatherFragment extends Fragment implements LoaderManager.Load
 
     private void updateWeather() {
 
-        String location = Util.getPreferredLocation(getActivity());
-        String mode = "json";
-        String units =  Util.getPreferredUnits(getActivity());
-        int cnt = Util.getPreferredDayCount(getActivity());
-        String appid = BuildConfig.OPEN_WEATHER_MAP_API_KEY;
-
-        OpenWeatherMapParam param = new OpenWeatherMapParam(location, mode, units, cnt, appid);
-
-        Intent alarmIntent = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
-        alarmIntent.putExtra(SunshineService.EXTRA_PARAM_LOCATION_QUERY, param);
-        PendingIntent pi = PendingIntent.getBroadcast(getActivity(), 0,alarmIntent, PendingIntent.FLAG_ONE_SHOT);
-
-        AlarmManager am=(AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
-        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pi);
+        SunshineSyncAdapter.syncImmediately(getActivity());
 
 
 //        String location = Util.getPreferredLocation(getActivity());

@@ -1,17 +1,24 @@
-package loc.developer.vladimiry.sunshine.service;
+package loc.developer.vladimiry.sunshine.sync;
 
-import android.app.IntentService;
-import android.content.BroadcastReceiver;
+/**
+ * Created by User on 11.05.2016.
+ */
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.AbstractThreadedSyncAdapter;
+import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.content.Context;
+import android.content.SyncRequest;
+import android.content.SyncResult;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
 import android.text.format.Time;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,45 +32,125 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Vector;
 
+import loc.developer.vladimiry.sunshine.BuildConfig;
+import loc.developer.vladimiry.sunshine.R;
 import loc.developer.vladimiry.sunshine.core.OpenWeatherMapParam;
+import loc.developer.vladimiry.sunshine.core.Util;
 import loc.developer.vladimiry.sunshine.data.WeatherContract;
 
-public class SunshineService extends IntentService {
+public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
+    public final String LOG_TAG = SunshineSyncAdapter.class.getSimpleName();
 
-    private ArrayAdapter<String> mFetchWeatherAdapter;
-    public static final String EXTRA_PARAM_LOCATION_QUERY = "extra.location.param.query";
-    private final String LOG_TAG = SunshineService.class.getSimpleName();
-    private static final String ACTION_LOCATION_QUERY = "loc.developer.vladimiry.sunshine.service.action.location.query";
+    // Interval at which to sync with the weather, in seconds.
+    // 60 seconds (1 minute) * 180 = 3 hours
+    public static final int SYNC_INTERVAL = 60 * 180;
+    public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
 
-    public SunshineService() {
-        super("SunshineService");
+    public SunshineSyncAdapter(Context context, boolean autoInitialize) {
+        super(context, autoInitialize);
+    }
+
+    public static void initializeSyncAdapter(Context context) {
+        getSyncAccount(context);
     }
 
     /**
      *
      * @param context
-     * @param param
+     * @param syncInterval
+     * @param flexTime
      */
-    public static void startActionLocation(Context context, OpenWeatherMapParam param) {
-        Intent intent = new Intent(context, SunshineService.class);
-        intent.setAction(ACTION_LOCATION_QUERY);
-        intent.putExtra(EXTRA_PARAM_LOCATION_QUERY, param);
-        context.startService(intent);
+    public static void configurePeriodicSync(Context context, int syncInterval, int flexTime) {
+        Account account = getSyncAccount(context);
+        String authority = context.getString(R.string.content_authority);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // we can enable inexact timers in our periodic sync
+            SyncRequest request = new SyncRequest.Builder().
+                    syncPeriodic(syncInterval, flexTime).
+                    setSyncAdapter(account, authority).
+                    setExtras(new Bundle()).build();
+            ContentResolver.requestSync(request);
+        } else {
+            ContentResolver.addPeriodicSync(account,
+                    authority, new Bundle(), syncInterval);
+        }
     }
 
     /**
      *
-     * @param intent
+     * @param newAccount
+     * @param context
      */
+    private static void onAccountCreated(Account newAccount, Context context) {
+        SunshineSyncAdapter.configurePeriodicSync(context, SYNC_INTERVAL, SYNC_FLEXTIME);
+        ContentResolver.setSyncAutomatically(newAccount, context.getString(R.string.content_authority), true);
+        syncImmediately(context);
+    }
+
     @Override
-    protected void onHandleIntent(Intent intent) {
-        if (intent != null) {
-            final String action = intent.getAction();
-            if (ACTION_LOCATION_QUERY.equals(action)) {
-                final OpenWeatherMapParam param = intent.getParcelableExtra(EXTRA_PARAM_LOCATION_QUERY);
-                handleActionLocationQuery(param);
+    public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
+        Log.d(LOG_TAG, "onPerformSync Called.");
+
+        String location = Util.getPreferredLocation(getContext());
+        String mode = "json";
+        String units =  Util.getPreferredUnits(getContext());
+        int cnt = Util.getPreferredDayCount(getContext());
+        String appid = BuildConfig.OPEN_WEATHER_MAP_API_KEY;
+
+        OpenWeatherMapParam param = new OpenWeatherMapParam(location, mode, units, cnt, appid);
+
+        handleActionLocationQuery(param);
+    }
+
+
+    /**
+     * Helper method to have the sync adapter sync immediately
+     * @param context The context used to access the account service
+     */
+    public static void syncImmediately(Context context) {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        ContentResolver.requestSync(getSyncAccount(context),
+                context.getString(R.string.content_authority), bundle);
+    }
+
+    /**
+     * Helper method to get the fake account to be used with SyncAdapter, or make a new one
+     * if the fake account doesn't exist yet.  If we make a new account, we call the
+     * onAccountCreated method so we can initialize things.
+     *
+     * @param context The context used to access the account service
+     * @return a fake account.
+     */
+    public static Account getSyncAccount(Context context) {
+        // Get an instance of the Android account manager
+        AccountManager accountManager =
+                (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
+
+        // Create the account type and default account
+        Account newAccount = new Account(
+                context.getString(R.string.app_name), context.getString(R.string.sync_account_type));
+
+        // If the password doesn't exist, the account doesn't exist
+        if ( null == accountManager.getPassword(newAccount) ) {
+
+        /*
+         * Add the account and account type, no password or user data
+         * If successful, return the Account object, otherwise report an error.
+         */
+            if (!accountManager.addAccountExplicitly(newAccount, "", null)) {
+                return null;
             }
+            /*
+             * If you don't set android:syncable="true" in
+             * in your <provider> element in the manifest,
+             * then call ContentResolver.setIsSyncable(account, AUTHORITY, 1)
+             * here.
+             */
+            onAccountCreated(newAccount, context);
         }
+        return newAccount;
     }
 
     /**
@@ -152,7 +239,7 @@ public class SunshineService extends IntentService {
 
         long locationId;
 
-        Cursor locationCursor = this.getContentResolver().query(
+        Cursor locationCursor = getContext().getContentResolver().query(
                 WeatherContract.LocationEntry.CONTENT_URI,
                 new String[] {WeatherContract.LocationEntry._ID},
                 WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ?",
@@ -170,7 +257,7 @@ public class SunshineService extends IntentService {
             locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, lat);
             locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, lon);
 
-            Uri insertedUri = this.getContentResolver().insert(
+            Uri insertedUri = getContext().getContentResolver().insert(
                     WeatherContract.LocationEntry.CONTENT_URI,
                     locationValues
             );
@@ -300,7 +387,7 @@ public class SunshineService extends IntentService {
             if ( cVVector.size() > 0 ) {
                 ContentValues[] cvArray = new ContentValues[cVVector.size()];
                 cVVector.toArray(cvArray);
-                this.getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI, cvArray);
+                getContext().getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI, cvArray);
             }
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
@@ -308,11 +395,4 @@ public class SunshineService extends IntentService {
         }
     }
 
-    public static class AlarmReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            OpenWeatherMapParam param = intent.getParcelableExtra(SunshineService.EXTRA_PARAM_LOCATION_QUERY);
-            SunshineService.startActionLocation(context, param);
-        }
-    }
 }

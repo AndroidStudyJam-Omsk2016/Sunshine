@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import loc.developer.vladimiry.sunshine.core.Util;
+import loc.developer.vladimiry.sunshine.sync.SunshineSyncAdapter;
 
 
 public class MainActivity extends AppCompatActivity implements FetchWeatherFragment.Callback{
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements FetchWeatherFragm
             getSupportActionBar().setElevation(0f);
         }
 
-
+        SunshineSyncAdapter.initializeSyncAdapter(this);
     }
 
     @Override
