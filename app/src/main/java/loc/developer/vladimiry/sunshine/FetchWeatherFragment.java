@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -78,14 +79,18 @@ public class FetchWeatherFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.forecastfragment, menu);
+        inflater.inflate(R.menu.fetch_weather_fragment, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.action_refresh) {
-            updateWeather();
+//        if(id == R.id.action_refresh) {
+//            updateWeather();
+//            return true;
+//        }
+        if (id == R.id.action_map) {
+            openPreferredLocationInMap();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -134,19 +139,7 @@ public class FetchWeatherFragment extends Fragment implements LoaderManager.Load
     }
 
     private void updateWeather() {
-
         SunshineSyncAdapter.syncImmediately(getActivity());
-
-
-//        String location = Util.getPreferredLocation(getActivity());
-//        String mode = "json";
-//        String units =  Util.getPreferredUnits(getActivity());
-//        int cnt = Util.getPreferredDayCount(getActivity());
-//        String appid = BuildConfig.OPEN_WEATHER_MAP_API_KEY;
-//
-//        OpenWeatherMapParam param = new OpenWeatherMapParam(location, mode, units, cnt, appid);
-//
-//        SunshineService.startActionLocation(getContext(), param);
     }
 
     @Override
@@ -199,4 +192,28 @@ public class FetchWeatherFragment extends Fragment implements LoaderManager.Load
             mFetchWeatherAdapter.setUseTodayLayout(mUseTodayLayout);
         }
     }
+
+    /**
+     *
+     */
+    private void openPreferredLocationInMap()
+    {
+        if ( null != mFetchWeatherAdapter ) {
+            Cursor c = mFetchWeatherAdapter.getCursor();
+            if ( null != c ) {
+                c.moveToPosition(0);
+                String posLat = c.getString(COL_COORD_LAT);
+                String posLong = c.getString(COL_COORD_LONG);
+                Uri geoLocation = Uri.parse("geo:" + posLat + "," + posLong);
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(geoLocation);
+                if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivity(intent);
+                } else {
+                    Log.d(LOG_TAG, "Couldn't call " + geoLocation.toString() + ", no receiving apps installed!");
+                }
+            }
+        }
+    }
+
 }

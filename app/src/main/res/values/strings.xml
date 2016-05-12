@@ -50,8 +50,6 @@
         <item>@string/pref_units_imperial</item>
     </string-array>
 
-    <string name="pref_last_notification">last_notification</string>
-
 
     <!--  -->
     <string name="today">Today</string>
@@ -61,7 +59,8 @@
     <string name="sync_account_type">sunshine.vladimiry.developer.loc</string>
     <string name="content_authority">loc.developer.vladimiry.sunshine</string>
 
-
+    <!-- Notification  -->
+    <string name="pref_last_notification">last_notification</string>
     <string name="format_full_friendly_date"><xliff:g id="month">%1$s</xliff:g>, <xliff:g id="day">%2$s</xliff:g></string>
     <string name="format_temperature"><xliff:g id="temp">%1.0f</xliff:g>\u00B0</string>
     <string name="format_wind_mph">Wind: <xliff:g id="speed">%1$1.0f</xliff:g> mph <xliff:g id="direction">%2$s</xliff:g></string>
