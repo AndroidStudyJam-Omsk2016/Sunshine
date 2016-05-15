@@ -40,6 +40,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Calendar;
+import java.util.Locale;
 import java.util.Vector;
 
 import loc.developer.vladimiry.sunshine.BuildConfig;
@@ -349,17 +351,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             // Insert the new weather information into the database
             Vector<ContentValues> cVVector = new Vector<>(weatherArray.length());
 
-            Time dayTime = new Time();
-            dayTime.setToNow();
-
-            // we start at the day returned by local time. Otherwise this is a mess.
-            int julianStartDay = Time.getJulianDay(System.currentTimeMillis(), dayTime.gmtoff);
-
-            // now we work exclusively in UTC
-            dayTime = new Time();
-
             for(int i = 0; i < weatherArray.length(); i++) {
-                long dateTime;
+                long dateTime = Util.getTimeInMillis(i);
                 double pressure;
                 int humidity;
                 double windSpeed;
@@ -373,8 +366,6 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
                 // Get the JSON object representing the day
                 JSONObject dayForecast = weatherArray.getJSONObject(i);
-
-                dateTime = dayTime.setJulianDay(julianStartDay+i);
 
                 pressure = dayForecast.getDouble(OWM_PRESSURE);
                 humidity = dayForecast.getInt(OWM_HUMIDITY);
@@ -418,7 +409,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 // delete old data
                 getContext().getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI,
                         WeatherContract.WeatherEntry.COLUMN_DATE + " <= ?",
-                        new String[] {Long.toString(dayTime.setJulianDay(julianStartDay-1))});
+                        new String[] {Long.toString(Util.getTimeInMillis(-1))});
 
                 notifyWeather();
             }

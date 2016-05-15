@@ -23,11 +23,13 @@ public class WeatherContract {
 
     public static long normalizeDate(long startDate) {
 
-        // normalize the start date to the beginning of the (UTC) day
-        Time time = new Time();
-        time.set(startDate);
-        int julianDay = Time.getJulianDay(startDate, time.gmtoff);
-        return time.setJulianDay(julianDay);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(startDate);
+        calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTimeInMillis();
     }
 
     public static final class LocationEntry implements BaseColumns {

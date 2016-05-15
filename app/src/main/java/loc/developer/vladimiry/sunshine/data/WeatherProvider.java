@@ -291,6 +291,7 @@ public class WeatherProvider extends ContentProvider {
     public int bulkInsert(Uri uri, ContentValues[] values) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
+
         switch (match) {
             case WEATHER:
                 db.beginTransaction();
