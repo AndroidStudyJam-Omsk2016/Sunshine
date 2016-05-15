@@ -4,10 +4,8 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
-import android.text.format.Time;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 /**
  * Created by User on 25.04.2016.
