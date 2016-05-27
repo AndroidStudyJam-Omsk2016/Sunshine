@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
+    <string name="app_name">Погода</string>
+    <string name="action_settings">Настройки</string>
+    <string name="action_map">Найти на карте</string>
+    <string name="action_share">Поделится</string>
+
+    <string name="action_refresh">Обновить</string>
+    <string name="title_activity_detail">Подробно</string>
+    <string name="title_activity_settings">@string/action_settings</string>
+
+    <!-- General settings -->
+    <string name="pref_header_general">Основные</string>
+    <string name="pref_location_title">Местоположение</string>
+    <string name="pref_location_description">Наименование населённого пункта</string>
+
+    <string name="pref_day_count_title">Число дней</string>
+    <string name="pref_day_count_description">Количество дней, для которых выдаётся прогноз погоды</string>
+
+    <string name="pref_enable_notifications_label">Оповещение о погоде</string>
+    <string name="pref_enable_notifications_true">Резрешено</string>
+    <string name="pref_enable_notifications_false">Запрещено</string>
+
+    <string name="pref_units_title">Единица измерения</string>
+    <string name="pref_units_description">Единица измерения температуры</string>
+    <string name="pref_units_imperial_title">по Фаренгейту</string>
+    <string name="pref_units_metric_title">по Цельсию</string>
+
+    <string name="today">Сегодня</string>
+    <string name="tomorrow">Завтра</string>
+
+    <!-- Notification  -->
+    <string name="format_full_friendly_date"><xliff:g id="month">%1$s</xliff:g>, <xliff:g id="day">%2$s</xliff:g></string>
+    <string name="format_wind_mph">Ветер: <xliff:g id="speed">%1$1.0f</xliff:g> миль/час <xliff:g id="direction">%2$s</xliff:g></string>
+    <string name="format_wind_kmh">Ветер: <xliff:g id="speed">%1$1.0f</xliff:g> км/ч <xliff:g id="direction">%2$s</xliff:g></string>
+    <string name="format_pressure">Давление: <xliff:g id="pressure">%1.0f</xliff:g> Па</string>
+    <string name="format_humidity">Влажность: <xliff:g id="humidity">%1.0f</xliff:g> %%</string>
+    <string name="format_notification">Прогноз: <xliff:g id="condition">%1$s</xliff:g> Максимум: <xliff:g id="high">%2$s</xliff:g> Минимум: <xliff:g id="low">%3$s</xliff:g></string>
+
+    <string name="pref_title_sync_frequency">Частота обновления</string>
+    <string-array name="pref_sync_frequency_titles">
+        <item>15 минут</item>
+        <item>30 минут</item>
+        <item>1 час</item>
+        <item>3 часа</item>
+        <item>6 часов</item>
+        <item>Никогда</item>
+    </string-array>
+
+    <string name="pref_title_system_sync_settings">Настройки обновления прогноза погоды</string>
+
+    <!-- Wind direction -->
+    <string name="wind_direction_n">С</string>
+    <string name="wind_direction_ne">СЗ</string>
+    <string name="wind_direction_e">З</string>
+    <string name="wind_direction_se">ЮЗ</string>
+    <string name="wind_direction_s">Ю</string>
+    <string name="wind_direction_sw">ЮВ</string>
+    <string name="wind_direction_w">В</string>
+    <string name="wind_direction_nw">СВ</string>
+
+</resources>

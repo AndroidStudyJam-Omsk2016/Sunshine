@@ -8,10 +8,7 @@
     <string name="title_activity_detail">DetailActivity</string>
     <string name="title_activity_settings">Settings</string>
 
-    <!-- Strings related to Settings -->
-
-
-    <!-- Example General settings -->
+    <!-- General settings -->
     <string name="pref_header_general">General</string>
 
     <!-- Preference - Location -->
@@ -36,9 +33,9 @@
     <string name="pref_units_title">Units</string>
     <string name="pref_units_key" translatable="false">units</string>
     <string name="pref_units_imperial" translatable="false">imperial</string>
-    <string name="pref_units_imperial_title" translatable="false">Imperial</string>
+    <string name="pref_units_imperial_title">Imperial</string>
     <string name="pref_units_metric" translatable="false">metric</string>
-    <string name="pref_units_metric_title" translatable="false">Metric</string>
+    <string name="pref_units_metric_title">Metric</string>
     <string name="pref_units_default" translatable="false">@string/pref_units_metric</string>
     <string name="pref_units_description">Units description</string>
     <string-array name="pref_units_titles">
@@ -125,5 +122,15 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
 
+
+    <!-- Wind direction -->
+    <string name="wind_direction_n">N</string>
+    <string name="wind_direction_ne">NE</string>
+    <string name="wind_direction_e">E</string>
+    <string name="wind_direction_se">SE</string>
+    <string name="wind_direction_s">S</string>
+    <string name="wind_direction_sw">SW</string>
+    <string name="wind_direction_w">W</string>
+    <string name="wind_direction_nw">NW</string>
 
 </resources>

@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import loc.developer.vladimiry.sunshine.R;
 
@@ -61,14 +62,14 @@ public class Util {
 
     public static final String DATE_FORMAT = "yyyyMMdd";
 
-    public static long getTimeInMillis(int offset) {
-        Calendar today = Calendar.getInstance(Locale.getDefault());
+    public static long getTimeInMillis(int day_offset) {
+        Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         today.set(Calendar.HOUR, 0);
         today.set(Calendar.MINUTE, 0);
         today.set(Calendar.SECOND, 0);
         today.set(Calendar.MILLISECOND, 0);
 
-        today.add(Calendar.DATE, offset);
+        today.add(Calendar.DATE, day_offset);
 
         return today.getTimeInMillis();
     }
@@ -128,7 +129,15 @@ public class Util {
             windSpeed = .621371192237334f * windSpeed;
         }
 
-        final String[] directionsText = { "N", "NE", "E", "SE", "S", "SW", "W", "NW" };
+        final String[] directionsText = {
+                context.getString(R.string.wind_direction_n),
+                context.getString(R.string.wind_direction_ne),
+                context.getString(R.string.wind_direction_e),
+                context.getString(R.string.wind_direction_se),
+                context.getString(R.string.wind_direction_s),
+                context.getString(R.string.wind_direction_sw),
+                context.getString(R.string.wind_direction_w),
+                context.getString(R.string.wind_direction_nw)};
         final int DEGREES_TOTAL = 360;
         final int DIR_TOTAL = 8;
 
